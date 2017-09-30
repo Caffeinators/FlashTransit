@@ -1,7 +1,13 @@
 <!DOCTYPE html>
+<!-- Created by Soumya Tiwari, Vrushab Shandilya, Ankur Gahlawat-->
 <html>
   <head>
     <meta charset="UTF-8" />
+      <meta name="description" content="Flash Transit is a web application that optimises a user's path from a source to destination.">
+
+<meta name="keywords" content="Flash Transit">
+
+<meta name="author" content="Soumyaa Tiwari, Vrushab Shandilya, Ankur Gahlawat">
     <title>Flash Transit</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD6eNjfwwlWCfw5sbFAfnJrJABLoHvE0JY&libraries=places&callback=initAutocomplete"
     async defer></script>
@@ -9,7 +15,7 @@
 	<script type="text/javascript" src="js/jquery-2.1.1.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/icons/css/font-awesome.min.css">
     <script>
-	//fare;
+	//Loads the default map on load
    window.onload = function(){
    	var myOptions = {
 			zoom: 12,
@@ -20,12 +26,14 @@
         // Draw the map
         var mapObject = new google.maps.Map(document.getElementById("map"), myOptions);
     };
+
+    //Main function that calculates everything
      function calculateRoute(from, to) {
 	
     	 document.getElementById("data").innerHTML= "";
-		var transitr= [];
+		var transitr= []; //to keep track of segments
 		var cost=0;
-		var way=[];
+		var way=[]; //used to split segments to take ola cabs
 		var way1=[];
 		var myOptions = {
 			zoom: 12,
@@ -102,6 +110,7 @@
               ];
 			
               var count =0;
+              //Calculate bus fare for every segment 
               for(i=0;i<size;i++)
               {
                 if(response.routes[0].legs[0].steps[i].travel_mode=="TRANSIT")
@@ -115,7 +124,7 @@
               }            
              
                 for(i=0;i<size;i++) 
-				{
+				{	// calculate Ola fare + instructions 
 					if(response.routes[0].legs[0].steps[i].travel_mode!="WALKING")
 					{ 
 						calcola(response.routes[0].legs[0].steps[i].transit.departure_stop.name+' Bangalore',response.routes[0].legs[0].steps[i].transit.arrival_stop.name+' Bangalore');
@@ -136,6 +145,7 @@
                     
                 }
                 
+                //Optimisation algorithm 
               for(i=0;i<way.length;i++)
               {
                 if(way[i].via=="taxi")
@@ -151,6 +161,8 @@
           } 
         );
       }
+
+      //Utility function to calculate Ola fare
 	function calcola(from,to)
 	{ 				  
 		var ola;
