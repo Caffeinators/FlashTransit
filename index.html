@@ -10,16 +10,25 @@
 	<link rel="stylesheet" type="text/css" href="css/icons/css/font-awesome.min.css">
     <script>
 	//fare;
-   
+   window.onload = function(){
+   	var myOptions = {
+			zoom: 12,
+			center: new google.maps.LatLng(12.9716, 77.5946),
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+        }; 
+		
+        // Draw the map
+        var mapObject = new google.maps.Map(document.getElementById("map"), myOptions);
+    };
      function calculateRoute(from, to) {
 	
-        // Center initialized to Naples, Italy
+    	 document.getElementById("data").innerHTML= "";
 		var transitr= [];
 		var cost=0;
 		var way=[];
 		var way1=[];
 		var myOptions = {
-			zoom: 10,
+			zoom: 12,
 			center: new google.maps.LatLng(12.9716, 77.5946),
 			mapTypeId: google.maps.MapTypeId.ROADMAP
         }; 
@@ -109,48 +118,30 @@
 				{
 					if(response.routes[0].legs[0].steps[i].travel_mode!="WALKING")
 					{ 
-						calcola(response.routes[0].legs[0].steps[i].transit.departure_stop.name+'Bangalore',response.routes[0].legs[0].steps[i].transit.arrival_stop.name+'Bangalore');
-						var time=response.routes[0].legs[0].steps[i].duration.value;
-						var from = response.routes[0].legs[0].steps[i].transit.departure_stop.name+'Bangalore';
-						var to = response.routes[0].legs[0].steps[i].transit.arrival_stop.name+'Bangalore';
+						calcola(response.routes[0].legs[0].steps[i].transit.departure_stop.name+' Bangalore',response.routes[0].legs[0].steps[i].transit.arrival_stop.name+' Bangalore');
+						var time=(response.routes[0].legs[0].steps[i].duration.value/60);
+						var from = response.routes[0].legs[0].steps[i].transit.departure_stop.name+' Bangalore';
+						var to = response.routes[0].legs[0].steps[i].transit.arrival_stop.name+' Bangalore';
 						var oladur = $("#duration").val();
 						var olafare = $("#fare").val();
 						var bus = arr1[i]; 
 						transitr.push({ttime : time, tfrom : from, tto : to, toladur: oladur, tolafare : olafare, tbus: bus});
 						document.getElementById("data").innerHTML += "Take bus from " + from + " to " + to + "<br/>"
 						document.getElementById("data").innerHTML += "Bus fare is : Rs." + bus + "<br/>";					  
-					} else {
+					}
+					 else 
+					{
 						document.getElementById("data").innerHTML += response.routes[0].legs[0].steps[i].instructions + "<br/>";
 					}
                     
                 }
-				
-				for (i = 0; i<transitr.length; i++) {
-				}
-				
-				
-				 /*for(i=0;i<size;i++)
-				 {  
-					//var o = transitr[i].toladur;
-					var b = transitr[i].ttime;
-					if(b-o>=15)
-					{
-					  way.push({from: transitr[i].tfrom, to: transitr[i].tto, via:"taxi"});
-	                  cost+= transitr[i].tolafare;
-					}
-					else
-					{
-	                  cost+=transitr[i].tbus;
-					  way.push({from: transitr[i].tfrom, to: transitr[i].tto, via : "bus"});
-					}
-				 }
-                 document.getElementById("data").append(cost);*/
+                
               for(i=0;i<way.length;i++)
               {
                 if(way[i].via=="taxi")
-					document.getElementsById("waypoints").innerHTML+="<div id='waypoints'>"+"take taxi from"+way[i].from+"till"+way[i].to+"</div>"+"<br/>";
+					document.getElementsById("waypoints").innerHTML+="take taxi from"+way[i].from+"till"+way[i].to+"</div>"+"<br/>";
                 else
-                    document.getElementsById("waypoints").innerHTML+="<div id='waypoints'>"+"take bus from"+way[i].from+"till"+way[i].to+"</div>"+"<br/>";
+                    document.getElementsById("waypoints").innerHTML+="take bus from"+way[i].from+"till"+way[i].to+"</div>"+"<br/>";
                 //plotdrive(way[i].from,way[i].to);
               }
 			//document.getElementById("data").append("total fare is " + cost);
@@ -185,6 +176,8 @@
 				   if((response.routes[0].legs[0].distance.value/1000)<15)
 				   {  
 					  ola= (40+((response.routes[0].legs[0].distance.value/1000)*6) + ((response.routes[0].legs[0].duration.value/60)*1.5)); 
+					  ola= ola.toFixed(3);
+
 				   
 				   }
 				   else
@@ -193,14 +186,19 @@
 						response.routes[0].legs[0].distance.value/=1000;
 						response.routes[0].legs[0].distance.value-=15;
 						ola= (40+((temp)*6) + ((response.routes[0].legs[0].duration.value/60)*1.5));
+						
 						ola+= (response.routes[0].legs[0].distance.value*12);
+						ola= ola.toFixed(3);
 
 				   }
 				   var t;
 					t=response.routes[0].legs[0].duration.value;
+					t= (t/60);
+					t= t.toFixed(3);
+
 					document.getElementById("data").append("Ola cab fare is : " + ola );
 					document.getElementById("data").innerHTML+="<br/>"
-					document.getElementById("data").append("Ola travel time is : " + (t/60) + " mins");
+					document.getElementById("data").append("Ola travel time is : " + t + " mins");
 					document.getElementById("data").innerHTML+="<br/>"
 					document.getElementById("duration").value = t;
 					document.getElementById("fare").value = ola;
@@ -209,38 +207,7 @@
 			  );
 			  //return val;
 	}
-		/*function plotdrive(from,to)
-		{
-			 // Draw the map
-				var mapObject = new google.maps.Map(document.getElementById("map"), myOptions);
-			//    var mapObject = new google.maps.Map(document.getElementById("map"), myOptions);
-			  
-				 var waypts = [];
-				var checkboxArray = document.getElementById('waypoints');
-				for (var i = 0; i < checkboxArray.length; i++) {
-				  if (checkboxArray.options[i].selected) {
-					waypts.push({
-					  location: checkboxArray[i].value,
-					  stopover: true
-					});
-				  }
-				}
 
-				directionsService.route({
-				  origin: document.getElementById('start').value,
-				  destination: document.getElementById('end').value,
-				  waypoints: waypts,
-				  optimizeWaypoints: true,
-				  travelMode: 'DRIVING'
-				}, function(response, status) {
-				  if (status === 'OK') {
-					directionsDisplay.setDirections(response);
-					var route = response.routes[0];
-				  } else {
-					window.alert('Directions request failed due to ' + status);
-				  }
-				});
-		}*/
       $(document).ready(function() {
         // If the browser supports the Geolocation API
         if (typeof navigator.geolocation == "undefined") {
@@ -329,18 +296,18 @@
     <form id="calculate-route" name="calculate-route" action="#" method="get">
     <div class="inputwrap">
       <input type="text" id="from" name="from" onFocus="geolocate()" required="required" placeholder="Source address" size="30" />
-      <a id="from-link" href="#"><i class="fa fa-map-marker fa-2x" aria-hidden="true"></i></a>
+      <a id="from-link" href="#"><i class="fa fa-map-marker fa-2x" aria-hidden="true" style="color: #F75B51"></i></a>
       <br />
       </div>
       <div class="inputwrap">
 		  <input type="text" id="to" name="to" onFocus="geolocate()" required="required" placeholder="Destination address" size="30" />
-		  <a id="to-link" href="#"><i class="fa fa-map-marker fa-2x" aria-hidden="true"></i></a>
+		  <a id="to-link" href="#"><i class="fa fa-map-marker fa-2x" aria-hidden="true" style="color: #F75B51"></i></a>
 		  <br />
 		  </div>
-		  <div class="inputwrap">
+		  <div class="inputwrap butt">
 		  <input type="submit" />
 		  </div>
-		  <div class="inputwrap">
+		  <div class="inputwrap butt">
 		  <input type="reset" />
       </div>
     </form>
@@ -355,20 +322,33 @@
     </div>
   </body>
 	<style type="text/css">
-    @import url('https://fonts.googleapis.com/css?family=Libre+Franklin');
+   @import url('https://fonts.googleapis.com/css?family=Lora|Roboto');
+   @import url('https://fonts.googleapis.com/css?family=Arvo');
+		body
+		{
+			overflow-y: hidden;
+			overflow-x: hidden;
+		}
 		.head
 		{
-		  background-color: #003366;
+		  background-color: #4285F4!important;
 		  width: 100%;
 		  height: 29%;
-		  font-family: 'Libre Franklin';
+		  font-family: 'Arvo';
+		  font-style: bold;
+		  color: white;
+		  padding: 1%;
+		  text-align: center;
 		}
 		.side
 		{
 		  height: 640px!important;
-		  border-right: 1px solid black;
+		  border-right: 1px solid #CCC;
 		  display: inline-block;
+		  font-family: 'Roboto';
+		  overflow-y: auto;
 		}
+
 		.inputwrap
 		{
 		  margin-top: 5%;
@@ -381,7 +361,19 @@
 		  width: 80%;
 		  outline: none;
 		  border: none;
-		  border-bottom: 1px solid black;
+		  border-bottom: 2px solid black;
+		}
+		.side input[type="text"]:focus
+		{
+		
+		  border-bottom: 2px solid #CCC;
+		  border-top: 1px dotted #CCC;
+		  color: #CCC;
+		}
+		.butt
+		{
+			display: inline-block;
+
 		}
 		.container
 		{
@@ -396,12 +388,24 @@
 		}
 		.side input[type="submit"],input[type="reset"]
 		{
-		  width: 40%;
-		  height: 7%;
-		  position: relative;
-		  outline: none;	  
+		  width: 120%;
+		  height: 10%!important;
+		 
+		  position: relative;	 
+		  border-width: 0;
+  		 outline: none;
+  		border-radius: 2px;
+ 		 box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
+   		background-color: #2ecc71;
+ 		 color: #ecf0f1;
+   		 transition: background-color .3s; 
 		}
-		#data {
+		.side input[type="submit"]:hover,input[type="reset"]:hover
+		{
+			 background-color: #27ae60;
+		}
+		#data
+		 {
 			margin-left: 5%;
 			margin-top: 5%
 		}
