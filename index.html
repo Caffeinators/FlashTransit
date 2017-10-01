@@ -220,13 +220,16 @@
 			  //return val;
 	}
 
+	
+	//jQuery section
       $(document).ready(function() {
+	  
         // If the browser supports the Geolocation API
         if (typeof navigator.geolocation == "undefined") {
           $("#error").text("Your browser doesn't support the Geolocation API");
           return;
         }
-
+					
         $("#from-link, #to-link").click(function(event) {
           event.preventDefault();
           var addressId = this.id.substring(0, this.id.indexOf("-"));
@@ -256,7 +259,13 @@
           event.preventDefault();
           calculateRoute($("#from").val(), $("#to").val());
         });
+		
+		$("input:reset").click(function(){
+			$('#data').html(" ");
+		});
+		
       });
+	  
 		function geolocate() {
 			if (navigator.geolocation) {
 			  navigator.geolocation.getCurrentPosition(function(position) {
@@ -319,8 +328,8 @@
 		  <div class="inputwrap butt">
 		  <input type="submit" />
 		  </div>
-		  <div class="inputwrap butt">
-		  <input type="reset" />
+		  <div class="inputwrap butt" >
+		  <input type="reset" id = "resetButton" />
       </div>
     </form>
     <div id="data"></div>
@@ -400,24 +409,23 @@
 		}
 		.side input[type="submit"],input[type="reset"]
 		{
-		  width: 120%;
-		  height: 10%!important;
-		 
-		  position: relative;	 
-		  border-width: 0;
-  		 outline: none;
-  		border-radius: 2px;
- 		 box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
-   		background-color: #2ecc71;
- 		 color: #ecf0f1;
-   		 transition: background-color .3s; 
+			width: 120%;
+			height: 10%!important;
+			position: relative;	 
+			border-width: 0;
+			outline: none;
+			border-radius: 2px;
+			box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
+			background-color: #2ecc71;
+			color: #ecf0f1;
+			transition: background-color .3s; 
 		}
 		.side input[type="submit"]:hover,input[type="reset"]:hover
 		{
 			 background-color: #27ae60;
 		}
 		#data
-		 {
+		{
 			margin-left: 5%;
 			margin-top: 5%
 		}
