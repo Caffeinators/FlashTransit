@@ -118,6 +118,7 @@
               curr = 0;
             }
 			var copyOlaFare, copyOlaDuration;
+
             for(i = 0; i < size; i++) { // calculate Ola fare + instructions
               if(response.routes[0].legs[0].steps[i].travel_mode != "WALKING") {
                 (calcola(response.routes[0].legs[0].steps[i].transit.departure_stop.name+' Bangalore',
@@ -135,8 +136,8 @@
                   ttime: time,
                   tfrom: from,
                   tto: to,
-                  toladur: oladur,
-                  tolafare: olafare,
+                  toladur: copyOlaDuration,
+                  tolafare: copyOlaFare,
                   tbus: bus
                 });
 
