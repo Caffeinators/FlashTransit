@@ -117,17 +117,18 @@
             } else
               curr = 0;
             }
-
+			var copyOlaFare, copyOlaDuration;
             for(i = 0; i < size; i++) { // calculate Ola fare + instructions
               if(response.routes[0].legs[0].steps[i].travel_mode != "WALKING") {
-                calcola(response.routes[0].legs[0].steps[i].transit.departure_stop.name+' Bangalore',
-                  response.routes[0].legs[0].steps[i].transit.arrival_stop.name+' Bangalore');
+                (calcola(response.routes[0].legs[0].steps[i].transit.departure_stop.name+' Bangalore',
+                  response.routes[0].legs[0].steps[i].transit.arrival_stop.name+' Bangalore')).then(function() {
+					copyOlaFare = olaFare;
+					copyOlaDuration = $("#duration").val();
+				  });
                 var time = response.routes[0].legs[0].steps[i].duration.value / 60;
                 var from = response.routes[0].legs[0].steps[i].transit.departure_stop.name+' Bangalore';
                 var to = response.routes[0].legs[0].steps[i].transit.arrival_stop.name+' Bangalore';
-                var oladur = $("#duration").val();
                 // var olafare = $("#fare").val();
-                var olafare = olaFare;
                 var bus = arr1[i];
 
                 transitr.push({
@@ -162,58 +163,61 @@
 
       // Utility function to calculate Ola fare
       function calcola(from, to) {
-        var ola;
-        var directionsService = new google.maps.DirectionsService();
-        var directionsRequest = {
-          origin: from,
-          destination: to,
-          travelMode: google.maps.DirectionsTravelMode.DRIVING,
-          unitSystem: google.maps.UnitSystem.METRIC
-        };
-        directionsService.route(
-          directionsRequest,
-          function(response, status) {
+		return new Promise ((resolve, reject) => {
+			var ola;
+			var directionsService = new google.maps.DirectionsService();
+			var directionsRequest = {
+			  origin: from,
+			  destination: to,
+			  travelMode: google.maps.DirectionsTravelMode.DRIVING,
+			  unitSystem: google.maps.UnitSystem.METRIC
+			};
+			directionsService.route(
+			  directionsRequest,
+			  function(response, status) {
 
-            if (status == google.maps.DirectionsStatus.OK) {
-              // do nothing
-            }
+				if (status == google.maps.DirectionsStatus.OK) {
+				  // do nothing
+				}
 
-            console.log(response);
+				console.log(response);
 
-            if((response.routes[0].legs[0].distance.value / 1000) < 15) {
-              ola = (40 + ((response.routes[0].legs[0].distance.value / 1000) * 6) + ((response.routes[0].legs[0].duration.value / 60) * 1.5));
-              ola = ola.toFixed(3);
-            } else {
-              var temp = (response.routes[0].legs[0].distance.value / 1000) - 15;
-              response.routes[0].legs[0].distance.value /= 1000;
-              response.routes[0].legs[0].distance.value -= 15;
-              ola = 40 + (temp * 6) + ((response.routes[0].legs[0].duration.value / 60) * 1.5);
+				if((response.routes[0].legs[0].distance.value / 1000) < 15) {
+				  ola = (40 + ((response.routes[0].legs[0].distance.value / 1000) * 6) + ((response.routes[0].legs[0].duration.value / 60) * 1.5));
+				  ola = ola.toFixed(3);
+				} else {
+				  var temp = (response.routes[0].legs[0].distance.value / 1000) - 15;
+				  response.routes[0].legs[0].distance.value /= 1000;
+				  response.routes[0].legs[0].distance.value -= 15;
+				  ola = 40 + (temp * 6) + ((response.routes[0].legs[0].duration.value / 60) * 1.5);
 
-              ola += (response.routes[0].legs[0].distance.value * 12);
-              ola = ola.toFixed(3);
+				  ola += (response.routes[0].legs[0].distance.value * 12);
+				  ola = ola.toFixed(3);
 
-            }
+				}
 
-            var t = response.routes[0].legs[0].duration.value;
-            t = t / 60;
-            t = t.toFixed(3);
+				var t = response.routes[0].legs[0].duration.value;
+				t = t / 60;
+				t = t.toFixed(3);
 
-            document.getElementById("data").append("Ola cab fare is : " + ola );
-            document.getElementById("data").innerHTML+="<br/>"
-            document.getElementById("data").append("Ola travel time is : " + t + " mins");
-            document.getElementById("data").innerHTML+="<br/>"
-            // document.getElementById("duration").value = t;
-            // document.getElementById("fare").value = ola;
+				document.getElementById("data").append("Ola cab fare is : " + ola );
+				document.getElementById("data").innerHTML+="<br/>"
+				document.getElementById("data").append("Ola travel time is : " + t + " mins");
+				document.getElementById("data").innerHTML+="<br/>"
+				// document.getElementById("duration").value = t;
+				// document.getElementById("fare").value = ola;
 
-            olaFare = ola;
-            $('#duration').val(t);
-            $('#fare').val(ola);
+				olaFare = ola;
+				$('#duration').val(t);
+				//$('#fare').val(ola);
 
-            // alert("Text should be set");
-            document.getElementById("distance").value = response.routes[0].legs[0].distance.value / 1000;
-          }
-        );
-        // return val;
+				// alert("Text should be set");
+				document.getElementById("distance").value = response.routes[0].legs[0].distance.value / 1000;
+			  }
+			);
+			resolve();
+		});
+        
       }
 
       // jQuery section
@@ -362,7 +366,11 @@
       overflow-y: hidden;
       overflow-x: hidden;
     }
-
+	
+	h2 {
+		font-family: Roboto;
+	}
+	
     .head {
       background-color: #4285F4!important;
       width: 100%;
